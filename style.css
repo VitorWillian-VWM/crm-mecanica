@@ -59,7 +59,15 @@ body{
     gap:10px;
 }
 
-.top-actions button{
+
+/* ===============================
+   MENU DE NOTIFICAÇÕES
+================================ */
+.notification-wrapper{
+    position:relative;
+}
+
+.top-icon-btn{
     width:34px;
     height:34px;
     border:none;
@@ -67,6 +75,65 @@ body{
     background:rgba(255,255,255,.08);
     color:#fff;
     cursor:pointer;
+    transition:.25s ease;
+}
+
+.top-icon-btn:hover{
+    background:rgba(154,205,50,.18);
+    transform:translateY(-2px);
+}
+
+.notification-menu{
+    position:absolute;
+    top:46px;
+    right:0;
+    width:280px;
+    background:#fff;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:0 18px 45px rgba(0,0,0,.18);
+    padding:12px;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-10px);
+    transition:.25s ease;
+    z-index:1000;
+}
+
+.notification-menu.active{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+
+.notification-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+}
+
+.notification-header span{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.notification-empty{
+    padding:22px 10px;
+    text-align:center;
+    color:var(--muted);
+}
+
+.notification-empty i{
+    font-size:26px;
+    color:var(--accent-dark);
+}
+
+.notification-empty p{
+    font-size:14px;
+    margin-top:8px;
 }
 
 /* ===============================

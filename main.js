@@ -225,3 +225,24 @@ function iniciarPaginaClientes() {
 
     renderizarClientes();
 }
+
+/* ===============================
+   NOTIFICAÇÕES - MENU SUPERIOR
+================================ */
+const notificationBtn = document.getElementById("notificationBtn");
+const notificationMenu = document.getElementById("notificationMenu");
+
+if(notificationBtn && notificationMenu){
+    notificationBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        notificationMenu.classList.toggle("active");
+    });
+
+    notificationMenu.addEventListener("click", (event) => {
+        event.stopPropagation();
+    });
+
+    document.addEventListener("click", () => {
+        notificationMenu.classList.remove("active");
+    });
+}
