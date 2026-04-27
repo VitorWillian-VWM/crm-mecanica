@@ -234,14 +234,18 @@ const notificationMenu = document.getElementById("notificationMenu");
 
 if(notificationBtn && notificationMenu){
     notificationBtn.addEventListener("click", (event) => {
-    event.stopPropagation();
+        event.stopPropagation();
 
-    notificationMenu.classList.toggle("active");
+        notificationMenu.classList.toggle("active");
 
-    if (settingsMenu) {
-        settingsMenu.classList.remove("active");
-    }
-});
+        if (settingsMenu) {
+            settingsMenu.classList.remove("active");
+        }
+
+        if (userMenu) {
+            userMenu.classList.remove("active");
+        }
+    });
 
     notificationMenu.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -264,8 +268,12 @@ if(settingsBtn && settingsMenu){
 
         settingsMenu.classList.toggle("active");
 
-        if(notificationMenu){
+        if (notificationMenu) {
             notificationMenu.classList.remove("active");
+        }
+
+        if (userMenu) {
+            userMenu.classList.remove("active");
         }
     });
 
@@ -275,5 +283,35 @@ if(settingsBtn && settingsMenu){
 
     document.addEventListener("click", () => {
         settingsMenu.classList.remove("active");
+    });
+}
+
+/* ===============================
+   MENU DO USUÁRIO
+================================ */
+const userBtn = document.getElementById("userBtn");
+const userMenu = document.getElementById("userMenu");
+
+if(userBtn && userMenu){
+    userBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        userMenu.classList.toggle("active");
+
+        if (notificationMenu) {
+            notificationMenu.classList.remove("active");
+        }
+
+        if (settingsMenu) {
+            settingsMenu.classList.remove("active");
+        }
+    });
+
+    userMenu.addEventListener("click", (event) => {
+        event.stopPropagation();
+    });
+
+    document.addEventListener("click", () => {
+        userMenu.classList.remove("active");
     });
 }

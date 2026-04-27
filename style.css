@@ -213,6 +213,93 @@ body{
 }
 
 /* ===============================
+   MENU DO USUÁRIO
+================================ */
+.user-wrapper{
+    position:relative;
+}
+
+.user-menu{
+    position:absolute;
+    top:46px;
+    right:0;
+    width:260px;
+    background:#fff;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:0 18px 45px rgba(0,0,0,.18);
+    padding:10px;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-10px);
+    transition:.25s ease;
+    z-index:1000;
+}
+
+.user-menu.active{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+
+.user-header{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    padding:10px;
+}
+
+.user-header span{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.user-avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:var(--accent);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#000;
+    font-size:20px;
+}
+
+.user-item{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:transparent;
+    cursor:pointer;
+    text-align:left;
+    font-weight:600;
+    transition:.2s ease;
+}
+
+.user-item i{
+    font-size:18px;
+    color:var(--accent-dark);
+}
+
+.user-item:hover{
+    background:#f3f4f6;
+}
+
+.user-item.danger{
+    color:#dc2626;
+}
+
+.user-item.danger i{
+    color:#dc2626;
+}
+
+/* ===============================
    MENU
 ================================ */
 .top-menu{
