@@ -532,3 +532,55 @@ if (userBtn && userMenu) {
     });
 }
 
+
+/* ===============================
+    PÁGINA DE ESTOQUE
+================================ */
+function iniciarPaginaEstoque() {
+    const abrirModalEstoque = document.getElementById("abrirModalEstoque");
+    const fecharModalEstoque = document.getElementById("fecharModalEstoque");
+    const cancelarModalEstoque = document.getElementById("cancelarModalEstoque");
+    const modalEstoque = document.getElementById("modalEstoque");
+    const estoqueForm = document.getElementById("estoqueForm");
+
+    if (!abrirModalEstoque || !modalEstoque || !estoqueForm) return;
+
+    function abrirModal() {
+        modalEstoque.classList.add("active");
+    }
+
+    function fecharModal() {
+        modalEstoque.classList.remove("active");
+        estoqueForm.reset();
+    }
+
+    abrirModalEstoque.addEventListener("click", abrirModal);
+    fecharModalEstoque.addEventListener("click", fecharModal);
+    cancelarModalEstoque.addEventListener("click", fecharModal);
+
+    modalEstoque.addEventListener("click", (event) => {
+        if (event.target === modalEstoque) {
+            fecharModal();
+        }
+    });
+
+    estoqueForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const itemEstoque = {
+            id: Date.now(),
+            codigo: document.getElementById("estCodigo").value.trim(),
+            descricao: document.getElementById("estDescricao").value.trim(),
+            quantidade: Number(document.getElementById("estQuantidade").value || 0),
+            precoCusto: Number(document.getElementById("estPrecoCusto").value || 0),
+            precoVenda: Number(document.getElementById("estPrecoVenda").value || 0),
+            fornecedor: document.getElementById("estFornecedor").value.trim(),
+            dataEntrada: document.getElementById("estDataEntrada").value,
+            obs: document.getElementById("estObs").value.trim()
+        };
+
+        console.log("Item recebido no estoque:", itemEstoque);
+
+        fecharModal();
+    });
+}
