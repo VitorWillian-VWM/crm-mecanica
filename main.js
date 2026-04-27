@@ -234,9 +234,14 @@ const notificationMenu = document.getElementById("notificationMenu");
 
 if(notificationBtn && notificationMenu){
     notificationBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        notificationMenu.classList.toggle("active");
-    });
+    event.stopPropagation();
+
+    notificationMenu.classList.toggle("active");
+
+    if (settingsMenu) {
+        settingsMenu.classList.remove("active");
+    }
+});
 
     notificationMenu.addEventListener("click", (event) => {
         event.stopPropagation();
