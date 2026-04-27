@@ -253,11 +253,6 @@ textarea{
     outline:none;
 }
 
-input:focus,
-textarea:focus{
-    box-shadow:0 0 0 3px rgba(154,205,50,.15);
-}
-
 /* ===============================
    BOTÕES
 ================================ */
