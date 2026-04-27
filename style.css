@@ -255,7 +255,6 @@ textarea{
 
 input:focus,
 textarea:focus{
-    border-color:var(--accent);
     box-shadow:0 0 0 3px rgba(154,205,50,.15);
 }
 
