@@ -1,0 +1,115 @@
+<section class="estoque-page">
+
+    <!-- AÇÕES -->
+    <div class="estoque-actions">
+        <button class="btn-main" id="abrirModalEstoque" type="button">
+            <i class="ri-inbox-archive-line"></i>
+            Receber mercadoria
+        </button>
+    </div>
+
+    <!-- LISTA DO ESTOQUE -->
+    <div class="glass-card">
+
+        <div class="consulta-header">
+            <div>
+                <h3>Estoque de peças</h3>
+                <p>Consulte peças cadastradas, saldo e valores.</p>
+            </div>
+
+            <div class="search-box">
+                <i class="ri-search-line"></i>
+                <input type="text" id="buscaEstoque" placeholder="Buscar item no estoque...">
+            </div>
+        </div>
+
+        <div class="clientes-resumo">
+            <span id="totalEstoque">0 itens no estoque</span>
+        </div>
+
+        <div id="estoqueGrid" class="clientes-grid lista-estoque">
+            <p class="empty-message">Nenhum item cadastrado no estoque.</p>
+        </div>
+
+    </div>
+
+    <!-- MODAL RECEBER MERCADORIA -->
+    <div class="modal-overlay" id="modalEstoque">
+        <div class="modal-card">
+
+            <div class="modal-header">
+                <div>
+                    <h3>Receber mercadoria</h3>
+                    <p>Cadastre ou atualize peças disponíveis no estoque.</p>
+                </div>
+
+                <button class="btn-close-modal" id="fecharModalEstoque" type="button">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <form id="estoqueForm" class="modal-form">
+
+                <div class="form-2-cols">
+                    <div>
+                        <label for="estCodigo">Código da peça</label>
+                        <input type="text" id="estCodigo" placeholder="Ex: P001">
+                    </div>
+
+                    <div>
+                        <label for="estDescricao">Descrição da peça</label>
+                        <input type="text" id="estDescricao" placeholder="Ex: Filtro de óleo" required>
+                    </div>
+                </div>
+
+                <div class="form-3-cols">
+                    <div>
+                        <label for="estQuantidade">Quantidade recebida</label>
+                        <input type="number" id="estQuantidade" min="1" placeholder="Ex: 10" required>
+                    </div>
+
+                    <div>
+                        <label for="estPrecoCusto">Preço de custo (R$)</label>
+                        <input type="number" id="estPrecoCusto" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <div>
+                        <label for="estPrecoVenda">Preço de venda (R$)</label>
+                        <input type="number" id="estPrecoVenda" step="0.01" placeholder="0.00" required>
+                    </div>
+                </div>
+
+                <div class="form-2-cols">
+                    <div>
+                        <label for="estFornecedor">Fornecedor</label>
+                        <input type="text" id="estFornecedor" placeholder="Nome do fornecedor">
+                    </div>
+
+                    <div>
+                        <label for="estDataEntrada">Data de entrada</label>
+                        <input type="date" id="estDataEntrada">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="estObs">Observações</label>
+                    <textarea id="estObs" rows="3" placeholder="Observações sobre a mercadoria..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-soft" id="cancelarModalEstoque">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-main">
+                        <i class="ri-save-3-line"></i>
+                        Salvar mercadoria
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</section>

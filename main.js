@@ -105,9 +105,13 @@ async function loadPage(page) {
             iniciarPaginaClientes();
         }
 
-if (page === "patio") {
-    iniciarPaginaPatio();
-}
+        if (page === "patio") {
+            iniciarPaginaPatio();
+        }
+
+        if (page === "estoque") {
+            iniciarPaginaEstoque();
+        }
 
     } catch (error) {
         pageContent.innerHTML = `
@@ -231,14 +235,37 @@ function iniciarPaginaClientes() {
 }
 
 /* função para iniciar a página de pátio e ordens de serviço */
-function iniciarPaginaPatio() {
+async function iniciarPaginaPatio() {
     const abrirModalOS = document.getElementById("abrirModalOS");
     const fecharModalOS = document.getElementById("fecharModalOS");
     const cancelarModalOS = document.getElementById("cancelarModalOS");
     const modalOS = document.getElementById("modalOS");
     const osForm = document.getElementById("osForm");
 
+    const osClienteSelect = document.getElementById("osClienteSelect");
+    const osTelefone = document.getElementById("osTelefone");
+    const osPlaca = document.getElementById("osPlaca");
+    const osMarca = document.getElementById("osMarca");
+    const osModelo = document.getElementById("osModelo");
+    const osAno = document.getElementById("osAno");
+
+    const osPecaSelect = document.getElementById("osPecaSelect");
+    const osPecaQtd = document.getElementById("osPecaQtd");
+    const adicionarPecaOS = document.getElementById("adicionarPecaOS");
+    const pecasOSLista = document.getElementById("pecasOSLista");
+
+    const osMaoObra = document.getElementById("osMaoObra");
+    const osTotalPecas = document.getElementById("osTotalPecas");
+    const osTotalGeral = document.getElementById("osTotalGeral");
+
     if (!abrirModalOS || !modalOS || !osForm) return;
+
+    let pecasSelecionadas = [];
+
+    await carregarBanco();
+
+    preencherClientesSelect();
+    preencherPecasSelect();
 
     function abrirModal() {
         modalOS.classList.add("active");
@@ -247,7 +274,125 @@ function iniciarPaginaPatio() {
     function fecharModal() {
         modalOS.classList.remove("active");
         osForm.reset();
+        pecasSelecionadas = [];
+        renderizarPecasOS();
+        calcularTotais();
     }
+
+    function preencherClientesSelect() {
+        osClienteSelect.innerHTML = `
+            <option value="">Selecione um cliente...</option>
+            ${db.clientes.map(cliente => `
+                <option value="${cliente.id}">
+                    ${cliente.nome} ${cliente.placa ? `- ${cliente.placa}` : ""}
+                </option>
+            `).join("")}
+        `;
+    }
+
+    function preencherPecasSelect() {
+        osPecaSelect.innerHTML = `
+            <option value="">Selecione uma peça...</option>
+            ${(db.estoque || []).map(peca => `
+                <option value="${peca.id}">
+                    ${peca.nome || peca.descricao} - R$ ${Number(peca.preco || 0).toFixed(2)}
+                </option>
+            `).join("")}
+        `;
+    }
+
+    osClienteSelect.addEventListener("change", () => {
+        const clienteId = Number(osClienteSelect.value);
+        const cliente = db.clientes.find(item => Number(item.id) === clienteId);
+
+        if (!cliente) {
+            osTelefone.value = "";
+            osPlaca.value = "";
+            osMarca.value = "";
+            osModelo.value = "";
+            osAno.value = "";
+            return;
+        }
+
+        osTelefone.value = cliente.telefone || "";
+        osPlaca.value = cliente.placa || "";
+        osMarca.value = cliente.marca || "";
+        osModelo.value = cliente.modelo || "";
+        osAno.value = cliente.ano || "";
+    });
+
+    adicionarPecaOS.addEventListener("click", () => {
+        const pecaId = Number(osPecaSelect.value);
+        const quantidade = Number(osPecaQtd.value);
+
+        if (!pecaId || quantidade <= 0) {
+            alert("Selecione uma peça e informe uma quantidade válida.");
+            return;
+        }
+
+        const peca = db.estoque.find(item => Number(item.id) === pecaId);
+
+        if (!peca) {
+            alert("Peça não encontrada no estoque.");
+            return;
+        }
+
+        const itemExistente = pecasSelecionadas.find(item => Number(item.id) === pecaId);
+
+        if (itemExistente) {
+            itemExistente.quantidade += quantidade;
+        } else {
+            pecasSelecionadas.push({
+                id: peca.id,
+                nome: peca.nome || peca.descricao,
+                preco: Number(peca.preco || 0),
+                quantidade
+            });
+        }
+
+        osPecaSelect.value = "";
+        osPecaQtd.value = "";
+
+        renderizarPecasOS();
+        calcularTotais();
+    });
+
+    function renderizarPecasOS() {
+        pecasOSLista.innerHTML = pecasSelecionadas.length
+            ? pecasSelecionadas.map((peca, index) => `
+                <div class="peca-os-item">
+                    <div>
+                        <strong>${peca.nome}</strong>
+                        <span>${peca.quantidade}x R$ ${peca.preco.toFixed(2)}</span>
+                    </div>
+
+                    <button type="button" class="btn-soft" onclick="removerPecaOS(${index})">
+                        Remover
+                    </button>
+                </div>
+            `).join("")
+            : `<p class="empty-message">Nenhuma peça adicionada à O.S.</p>`;
+    }
+
+    window.removerPecaOS = function (index) {
+        pecasSelecionadas.splice(index, 1);
+        renderizarPecasOS();
+        calcularTotais();
+    };
+
+    function calcularTotais() {
+        const totalPecas = pecasSelecionadas.reduce((total, peca) => {
+            return total + (peca.preco * peca.quantidade);
+        }, 0);
+
+        const maoObra = Number(osMaoObra.value || 0);
+        const totalGeral = totalPecas + maoObra;
+
+        osTotalPecas.value = totalPecas.toFixed(2);
+        osTotalGeral.value = totalGeral.toFixed(2);
+    }
+
+    osMaoObra.addEventListener("input", calcularTotais);
 
     abrirModalOS.addEventListener("click", abrirModal);
     fecharModalOS.addEventListener("click", fecharModal);
@@ -262,27 +407,39 @@ function iniciarPaginaPatio() {
     osForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
+        const clienteSelecionado = db.clientes.find(
+            cliente => Number(cliente.id) === Number(osClienteSelect.value)
+        );
+
         const ordemServico = {
             id: Date.now(),
-            cliente: document.getElementById("osCliente").value.trim(),
-            telefone: document.getElementById("osTelefone").value.trim(),
-            placa: document.getElementById("osPlaca").value.trim().toUpperCase(),
-            marca: document.getElementById("osMarca").value.trim(),
-            modelo: document.getElementById("osModelo").value.trim(),
+            clienteId: clienteSelecionado?.id || null,
+            clienteNome: clienteSelecionado?.nome || "",
+            telefone: osTelefone.value.trim(),
+            placa: osPlaca.value.trim().toUpperCase(),
+            marca: osMarca.value.trim(),
+            modelo: osModelo.value.trim(),
+            ano: osAno.value.trim(),
             dataEntrada: document.getElementById("osDataEntrada").value,
             status: document.getElementById("osStatus").value,
+            pagamento: document.getElementById("osPagamento").value,
             problema: document.getElementById("osProblema").value.trim(),
             servico: document.getElementById("osServico").value.trim(),
-            maoObra: document.getElementById("osMaoObra").value.trim(),
-            pecas: document.getElementById("osPecas").value.trim(),
-            pagamento: document.getElementById("osPagamento").value,
-            observacoes: document.getElementById("osObs").value.trim()
+            pecas: pecasSelecionadas,
+            maoObra: Number(osMaoObra.value || 0),
+            totalPecas: Number(osTotalPecas.value || 0),
+            totalGeral: Number(osTotalGeral.value || 0),
+            observacoes: document.getElementById("osObs").value.trim(),
+            criadoEm: new Date().toLocaleString("pt-BR")
         };
 
         console.log("Ordem de Serviço:", ordemServico);
 
         fecharModal();
     });
+
+    renderizarPecasOS();
+    calcularTotais();
 }
 
 /* ===============================
@@ -291,7 +448,7 @@ function iniciarPaginaPatio() {
 const notificationBtn = document.getElementById("notificationBtn");
 const notificationMenu = document.getElementById("notificationMenu");
 
-if(notificationBtn && notificationMenu){
+if (notificationBtn && notificationMenu) {
     notificationBtn.addEventListener("click", (event) => {
         event.stopPropagation();
 
@@ -321,7 +478,7 @@ if(notificationBtn && notificationMenu){
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsMenu = document.getElementById("settingsMenu");
 
-if(settingsBtn && settingsMenu){
+if (settingsBtn && settingsMenu) {
     settingsBtn.addEventListener("click", (event) => {
         event.stopPropagation();
 
@@ -351,7 +508,7 @@ if(settingsBtn && settingsMenu){
 const userBtn = document.getElementById("userBtn");
 const userMenu = document.getElementById("userMenu");
 
-if(userBtn && userMenu){
+if (userBtn && userMenu) {
     userBtn.addEventListener("click", (event) => {
         event.stopPropagation();
 

@@ -668,6 +668,61 @@ textarea {
     padding-top: 4px;
 }
 
+
+/* ===============================
+   PÁGINA ESTOQUE - ORGANIZAÇÃO
+================================ */
+.estoque-page{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.estoque-page .estoque-actions{
+    display:flex;
+    justify-content:flex-start;
+    padding-bottom:16px;
+    border-bottom:1px solid var(--border);
+    margin:0;
+}
+
+.estoque-page .glass-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+}
+
+.estoque-page .consulta-header{
+    padding-bottom:16px;
+    border-bottom:1px solid var(--border);
+}
+
+.lista-estoque{
+    padding-top:4px;
+}
+
+.estoque-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+}
+
+.estoque-info h3{
+    font-size:16px;
+    font-weight:800;
+}
+
+.estoque-info p{
+    color:var(--muted);
+    font-size:14px;
+}
+
 /* ===============================
    MODAL HEADER
 ================================ */

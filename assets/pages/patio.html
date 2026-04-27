@@ -1,5 +1,6 @@
 <section class="patio-page">
 
+    <!-- AÇÕES -->
     <div class="os-actions">
         <button class="btn-main" id="abrirModalOS" type="button">
             <i class="ri-add-circle-line"></i>
@@ -7,7 +8,9 @@
         </button>
     </div>
 
+    <!-- LISTA DE ORDENS -->
     <div class="glass-card">
+
         <div class="consulta-header">
             <div>
                 <h3>Ordens de Serviço</h3>
@@ -27,15 +30,17 @@
         <div id="osGrid" class="clientes-grid lista-os">
             <p class="empty-message">Nenhuma ordem de serviço cadastrada.</p>
         </div>
+
     </div>
 
+    <!-- MODAL NOVA ORDEM DE SERVIÇO -->
     <div class="modal-overlay" id="modalOS">
         <div class="modal-card">
 
             <div class="modal-header">
                 <div>
                     <h3>Nova Ordem de Serviço</h3>
-                    <p>Preencha os dados do atendimento da oficina.</p>
+                    <p>Selecione o cliente, revise os dados do veículo e registre o atendimento.</p>
                 </div>
 
                 <button class="btn-close-modal" id="fecharModalOS" type="button">
@@ -45,75 +50,66 @@
 
             <form id="osForm" class="modal-form">
 
+                <!-- CLIENTE -->
                 <div class="form-2-cols">
                     <div>
-                        <label>Cliente</label>
-                        <input type="text" id="osCliente" placeholder="Nome do cliente" required>
+                        <label for="osClienteSelect">Cliente cadastrado</label>
+                        <select id="osClienteSelect" required>
+                            <option value="">Selecione um cliente...</option>
+                        </select>
                     </div>
 
                     <div>
-                        <label>Telefone / WhatsApp</label>
-                        <input type="text" id="osTelefone" placeholder="(00) 00000-0000">
+                        <label for="osTelefone">Telefone / WhatsApp</label>
+                        <input type="text" id="osTelefone" placeholder="Preenchido automaticamente">
                     </div>
                 </div>
 
+                <!-- VEÍCULO -->
                 <div class="form-3-cols">
                     <div>
-                        <label>Placa</label>
+                        <label for="osPlaca">Placa</label>
                         <input type="text" id="osPlaca" placeholder="ABC1D23" required>
                     </div>
 
                     <div>
-                        <label>Marca</label>
+                        <label for="osMarca">Marca</label>
                         <input type="text" id="osMarca" placeholder="Ex: Fiat">
                     </div>
 
                     <div>
-                        <label>Modelo</label>
+                        <label for="osModelo">Modelo</label>
                         <input type="text" id="osModelo" placeholder="Ex: Uno">
                     </div>
                 </div>
 
                 <div class="form-2-cols">
                     <div>
-                        <label>Data de entrada</label>
-                        <input type="date" id="osDataEntrada">
+                        <label for="osAno">Ano</label>
+                        <input type="number" id="osAno" placeholder="Ex: 2015">
                     </div>
 
                     <div>
-                        <label>Status</label>
+                        <label for="osDataEntrada">Data de entrada</label>
+                        <input type="date" id="osDataEntrada">
+                    </div>
+                </div>
+
+                <!-- STATUS -->
+                <div class="form-2-cols">
+                    <div>
+                        <label for="osStatus">Status da O.S</label>
                         <select id="osStatus">
                             <option value="aberta">Aberta</option>
                             <option value="em_andamento">Em andamento</option>
                             <option value="aguardando_peca">Aguardando peça</option>
+                            <option value="aguardando_cliente">Aguardando cliente</option>
                             <option value="finalizada">Finalizada</option>
                         </select>
                     </div>
-                </div>
-
-                <div>
-                    <label>Problema relatado pelo cliente</label>
-                    <textarea id="osProblema" rows="3" placeholder="Ex: carro falhando, barulho no motor..."></textarea>
-                </div>
-
-                <div>
-                    <label>Serviço a ser realizado</label>
-                    <textarea id="osServico" rows="3" placeholder="Ex: revisão, troca de óleo, diagnóstico..."></textarea>
-                </div>
-
-                <div class="form-3-cols">
-                    <div>
-                        <label>Mão de obra (R$)</label>
-                        <input type="number" id="osMaoObra" placeholder="0.00" step="0.01">
-                    </div>
 
                     <div>
-                        <label>Peças (R$)</label>
-                        <input type="number" id="osPecas" placeholder="0.00" step="0.01">
-                    </div>
-
-                    <div>
-                        <label>Forma de pagamento</label>
+                        <label for="osPagamento">Forma de pagamento</label>
                         <select id="osPagamento">
                             <option value="">Selecione</option>
                             <option value="dinheiro">Dinheiro</option>
@@ -124,11 +120,74 @@
                     </div>
                 </div>
 
+                <!-- PROBLEMA E SERVIÇO -->
                 <div>
-                    <label>Observações internas</label>
-                    <textarea id="osObs" rows="3" placeholder="Informações adicionais da oficina..."></textarea>
+                    <label for="osProblema">Problema relatado pelo cliente</label>
+                    <textarea id="osProblema" rows="3" placeholder="Ex: carro falhando, barulho no motor, dificuldade para ligar..."></textarea>
                 </div>
 
+                <div>
+                    <label for="osServico">Serviço a ser realizado</label>
+                    <textarea id="osServico" rows="3" placeholder="Ex: diagnóstico, troca de óleo, revisão, troca de peça..."></textarea>
+                </div>
+
+                <!-- PEÇAS DO ESTOQUE -->
+                <div class="glass-card os-pecas-box">
+                    <h4>Peças utilizadas</h4>
+                    <p>Selecione peças já cadastradas no estoque.</p>
+
+                    <div class="form-3-cols">
+                        <div>
+                            <label for="osPecaSelect">Peça do estoque</label>
+                            <select id="osPecaSelect">
+                                <option value="">Selecione uma peça...</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="osPecaQtd">Quantidade</label>
+                            <input type="number" id="osPecaQtd" min="1" placeholder="Ex: 1">
+                        </div>
+
+                        <div>
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn-soft full-width" id="adicionarPecaOS">
+                                <i class="ri-add-line"></i>
+                                Adicionar peça
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="pecasOSLista" class="pecas-os-lista">
+                        <p class="empty-message">Nenhuma peça adicionada à O.S.</p>
+                    </div>
+                </div>
+
+                <!-- VALORES -->
+                <div class="form-3-cols">
+                    <div>
+                        <label for="osMaoObra">Mão de obra (R$)</label>
+                        <input type="number" id="osMaoObra" placeholder="0.00" step="0.01">
+                    </div>
+
+                    <div>
+                        <label for="osTotalPecas">Total em peças (R$)</label>
+                        <input type="number" id="osTotalPecas" placeholder="0.00" step="0.01" readonly>
+                    </div>
+
+                    <div>
+                        <label for="osTotalGeral">Total geral (R$)</label>
+                        <input type="number" id="osTotalGeral" placeholder="0.00" step="0.01" readonly>
+                    </div>
+                </div>
+
+                <!-- OBSERVAÇÕES -->
+                <div>
+                    <label for="osObs">Observações internas</label>
+                    <textarea id="osObs" rows="3" placeholder="Informações internas da oficina..."></textarea>
+                </div>
+
+                <!-- AÇÕES -->
                 <div class="modal-actions">
                     <button type="button" class="btn-soft" id="cancelarModalOS">
                         Cancelar
@@ -141,6 +200,7 @@
                 </div>
 
             </form>
+
         </div>
     </div>
 
