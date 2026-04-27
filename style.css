@@ -724,6 +724,54 @@ textarea {
 }
 
 /* ===============================
+   ESPAÇAMENTO FORMULÁRIOS (GLOBAL)
+================================ */
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px; /* espaçamento vertical entre blocos */
+}
+
+/* colunas */
+.form-2-cols,
+.form-3-cols {
+    display: grid;
+    gap: 16px; /* espaço entre colunas */
+}
+
+/* 2 colunas */
+.form-2-cols {
+    grid-template-columns: 1fr 1fr;
+}
+
+/* 3 colunas */
+.form-3-cols {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* inputs e selects */
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+    width: 100%;
+    margin-top: 6px;
+}
+
+/* labels */
+.modal-form label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* separador leve entre blocos grandes */
+.modal-form > div {
+    margin-bottom: 4px;
+}
+
+/* ===============================
    MODAL HEADER
 ================================ */
 .modal-header {
@@ -852,4 +900,42 @@ textarea {
         flex-direction: column;
         align-items: flex-start;
     }
+}
+
+/* ===============================
+   FINANCEIRO
+================================ */
+.financeiro-page{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.financeiro-actions{
+    display:flex;
+    justify-content:flex-start;
+    padding-bottom:16px;
+    border-bottom:1px solid var(--border);
+}
+
+.lista-financeiro{
+    padding-top:6px;
+}
+
+.financeiro-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:#fff;
+}
+
+.financeiro-item.entrada{
+    border-left:4px solid #22c55e;
+}
+
+.financeiro-item.saida{
+    border-left:4px solid #ef4444;
 }

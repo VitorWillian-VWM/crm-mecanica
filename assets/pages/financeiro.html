@@ -1,0 +1,130 @@
+<section class="financeiro-page">
+
+    <!-- AÇÕES -->
+    <div class="financeiro-actions">
+        <button class="btn-main" id="abrirModalFinanceiro" type="button">
+            <i class="ri-money-dollar-circle-line"></i>
+            Nova movimentação
+        </button>
+    </div>
+
+    <!-- RESUMO -->
+    <div class="cards compact">
+
+        <div class="card">
+            <h4>Faturamento Hoje</h4>
+            <h2 id="fatHoje">R$ 0,00</h2>
+        </div>
+
+        <div class="card">
+            <h4>Faturamento Mês</h4>
+            <h2 id="fatMes">R$ 0,00</h2>
+        </div>
+
+        <div class="card">
+            <h4>Em aberto</h4>
+            <h2 id="fatAberto">R$ 0,00</h2>
+        </div>
+
+        <div class="card">
+            <h4>Recebido</h4>
+            <h2 id="fatRecebido">R$ 0,00</h2>
+        </div>
+
+    </div>
+
+    <!-- LISTA -->
+    <div class="glass-card">
+
+        <div class="consulta-header">
+            <div>
+                <h3>Movimentações financeiras</h3>
+                <p>Controle de entradas e saídas da oficina.</p>
+            </div>
+
+            <div class="search-box">
+                <i class="ri-search-line"></i>
+                <input type="text" id="buscaFinanceiro" placeholder="Buscar movimentação...">
+            </div>
+        </div>
+
+        <div class="clientes-resumo">
+            <span id="totalFinanceiro">0 movimentações</span>
+        </div>
+
+        <div id="financeiroGrid" class="clientes-grid lista-financeiro">
+            <p class="empty-message">Nenhuma movimentação registrada.</p>
+        </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalFinanceiro">
+        <div class="modal-card">
+
+            <div class="modal-header">
+                <div>
+                    <h3>Nova movimentação</h3>
+                    <p>Registre entradas e saídas financeiras.</p>
+                </div>
+
+                <button class="btn-close-modal" id="fecharModalFinanceiro" type="button">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <form id="financeiroForm" class="modal-form">
+
+                <div class="form-2-cols">
+                    <div>
+                        <label>Tipo</label>
+                        <select id="finTipo">
+                            <option value="entrada">Entrada</option>
+                            <option value="saida">Saída</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Valor (R$)</label>
+                        <input type="number" id="finValor" step="0.01" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label>Descrição</label>
+                    <input type="text" id="finDescricao" placeholder="Ex: pagamento cliente, compra de peças..." required>
+                </div>
+
+                <div class="form-2-cols">
+                    <div>
+                        <label>Forma de pagamento</label>
+                        <select id="finPagamento">
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="pix">Pix</option>
+                            <option value="cartao">Cartão</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Data</label>
+                        <input type="date" id="finData">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-soft" id="cancelarModalFinanceiro">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-main">
+                        <i class="ri-save-3-line"></i>
+                        Salvar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</section>

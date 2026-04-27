@@ -113,6 +113,10 @@ async function loadPage(page) {
             iniciarPaginaEstoque();
         }
 
+        if (page === "financeiro") {
+            iniciarPaginaFinanceiro();
+        }
+
     } catch (error) {
         pageContent.innerHTML = `
             <div class="panel">
@@ -123,6 +127,7 @@ async function loadPage(page) {
     }
 }
 
+/* função para iniciar a página de clientes */
 function iniciarPaginaClientes() {
     const clienteForm = document.getElementById("clienteForm");
     const clientesGrid = document.getElementById("clientesGrid");
@@ -442,6 +447,121 @@ async function iniciarPaginaPatio() {
     calcularTotais();
 }
 
+/* função para iniciar a página de estoque */
+function iniciarPaginaEstoque() {
+    const abrirModalEstoque = document.getElementById("abrirModalEstoque");
+    const fecharModalEstoque = document.getElementById("fecharModalEstoque");
+    const cancelarModalEstoque = document.getElementById("cancelarModalEstoque");
+    const modalEstoque = document.getElementById("modalEstoque");
+    const estoqueForm = document.getElementById("estoqueForm");
+
+    if (!abrirModalEstoque || !modalEstoque || !estoqueForm) return;
+
+    function abrirModal() {
+        modalEstoque.classList.add("active");
+    }
+
+    function fecharModal() {
+        modalEstoque.classList.remove("active");
+        estoqueForm.reset();
+    }
+
+    abrirModalEstoque.addEventListener("click", abrirModal);
+    fecharModalEstoque.addEventListener("click", fecharModal);
+    cancelarModalEstoque.addEventListener("click", fecharModal);
+
+    modalEstoque.addEventListener("click", (event) => {
+        if (event.target === modalEstoque) {
+            fecharModal();
+        }
+    });
+
+    estoqueForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const itemEstoque = {
+            id: Date.now(),
+            codigo: document.getElementById("estCodigo").value.trim(),
+            descricao: document.getElementById("estDescricao").value.trim(),
+            quantidade: Number(document.getElementById("estQuantidade").value || 0),
+            precoCusto: Number(document.getElementById("estPrecoCusto").value || 0),
+            precoVenda: Number(document.getElementById("estPrecoVenda").value || 0),
+            fornecedor: document.getElementById("estFornecedor").value.trim(),
+            dataEntrada: document.getElementById("estDataEntrada").value,
+            obs: document.getElementById("estObs").value.trim()
+        };
+
+        console.log("Item recebido no estoque:", itemEstoque);
+
+        fecharModal();
+    });
+}
+
+/* função para iniciar a página de financeiro */
+function iniciarPaginaFinanceiro() {
+
+    const abrirModal = document.getElementById("abrirModalFinanceiro");
+    const fecharModal = document.getElementById("fecharModalFinanceiro");
+    const cancelarModal = document.getElementById("cancelarModalFinanceiro");
+    const modal = document.getElementById("modalFinanceiro");
+    const form = document.getElementById("financeiroForm");
+    const grid = document.getElementById("financeiroGrid");
+    const total = document.getElementById("totalFinanceiro");
+
+    let movimentacoes = [];
+
+    function abrir() {
+        modal.classList.add("active");
+    }
+
+    function fechar() {
+        modal.classList.remove("active");
+        form.reset();
+    }
+
+    abrirModal.addEventListener("click", abrir);
+    fecharModal.addEventListener("click", fechar);
+    cancelarModal.addEventListener("click", fechar);
+
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) fechar();
+    });
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const mov = {
+            id: Date.now(),
+            tipo: document.getElementById("finTipo").value,
+            valor: Number(document.getElementById("finValor").value),
+            descricao: document.getElementById("finDescricao").value,
+            pagamento: document.getElementById("finPagamento").value,
+            data: document.getElementById("finData").value
+        };
+
+        movimentacoes.push(mov);
+
+        renderizar();
+        fechar();
+    });
+
+    function renderizar() {
+        total.textContent = `${movimentacoes.length} movimentações`;
+
+        grid.innerHTML = movimentacoes.map(m => `
+            <div class="financeiro-item ${m.tipo}">
+                <div>
+                    <strong>${m.descricao}</strong>
+                    <p>${m.pagamento} • ${m.data || ""}</p>
+                </div>
+                <h3>R$ ${m.valor.toFixed(2)}</h3>
+            </div>
+        `).join("") || `<p class="empty-message">Nenhuma movimentação registrada.</p>`;
+    }
+
+    renderizar();
+}
+
 /* ===============================
    NOTIFICAÇÕES - MENU SUPERIOR
 ================================ */
@@ -529,58 +649,5 @@ if (userBtn && userMenu) {
 
     document.addEventListener("click", () => {
         userMenu.classList.remove("active");
-    });
-}
-
-
-/* ===============================
-    PÁGINA DE ESTOQUE
-================================ */
-function iniciarPaginaEstoque() {
-    const abrirModalEstoque = document.getElementById("abrirModalEstoque");
-    const fecharModalEstoque = document.getElementById("fecharModalEstoque");
-    const cancelarModalEstoque = document.getElementById("cancelarModalEstoque");
-    const modalEstoque = document.getElementById("modalEstoque");
-    const estoqueForm = document.getElementById("estoqueForm");
-
-    if (!abrirModalEstoque || !modalEstoque || !estoqueForm) return;
-
-    function abrirModal() {
-        modalEstoque.classList.add("active");
-    }
-
-    function fecharModal() {
-        modalEstoque.classList.remove("active");
-        estoqueForm.reset();
-    }
-
-    abrirModalEstoque.addEventListener("click", abrirModal);
-    fecharModalEstoque.addEventListener("click", fecharModal);
-    cancelarModalEstoque.addEventListener("click", fecharModal);
-
-    modalEstoque.addEventListener("click", (event) => {
-        if (event.target === modalEstoque) {
-            fecharModal();
-        }
-    });
-
-    estoqueForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-
-        const itemEstoque = {
-            id: Date.now(),
-            codigo: document.getElementById("estCodigo").value.trim(),
-            descricao: document.getElementById("estDescricao").value.trim(),
-            quantidade: Number(document.getElementById("estQuantidade").value || 0),
-            precoCusto: Number(document.getElementById("estPrecoCusto").value || 0),
-            precoVenda: Number(document.getElementById("estPrecoVenda").value || 0),
-            fornecedor: document.getElementById("estFornecedor").value.trim(),
-            dataEntrada: document.getElementById("estDataEntrada").value,
-            obs: document.getElementById("estObs").value.trim()
-        };
-
-        console.log("Item recebido no estoque:", itemEstoque);
-
-        fecharModal();
     });
 }
