@@ -105,6 +105,10 @@ async function loadPage(page) {
             iniciarPaginaClientes();
         }
 
+if (page === "patio") {
+    iniciarPaginaPatio();
+}
+
     } catch (error) {
         pageContent.innerHTML = `
             <div class="panel">
@@ -226,6 +230,61 @@ function iniciarPaginaClientes() {
     renderizarClientes();
 }
 
+/* função para iniciar a página de pátio e ordens de serviço */
+function iniciarPaginaPatio() {
+    const abrirModalOS = document.getElementById("abrirModalOS");
+    const fecharModalOS = document.getElementById("fecharModalOS");
+    const cancelarModalOS = document.getElementById("cancelarModalOS");
+    const modalOS = document.getElementById("modalOS");
+    const osForm = document.getElementById("osForm");
+
+    if (!abrirModalOS || !modalOS || !osForm) return;
+
+    function abrirModal() {
+        modalOS.classList.add("active");
+    }
+
+    function fecharModal() {
+        modalOS.classList.remove("active");
+        osForm.reset();
+    }
+
+    abrirModalOS.addEventListener("click", abrirModal);
+    fecharModalOS.addEventListener("click", fecharModal);
+    cancelarModalOS.addEventListener("click", fecharModal);
+
+    modalOS.addEventListener("click", (event) => {
+        if (event.target === modalOS) {
+            fecharModal();
+        }
+    });
+
+    osForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const ordemServico = {
+            id: Date.now(),
+            cliente: document.getElementById("osCliente").value.trim(),
+            telefone: document.getElementById("osTelefone").value.trim(),
+            placa: document.getElementById("osPlaca").value.trim().toUpperCase(),
+            marca: document.getElementById("osMarca").value.trim(),
+            modelo: document.getElementById("osModelo").value.trim(),
+            dataEntrada: document.getElementById("osDataEntrada").value,
+            status: document.getElementById("osStatus").value,
+            problema: document.getElementById("osProblema").value.trim(),
+            servico: document.getElementById("osServico").value.trim(),
+            maoObra: document.getElementById("osMaoObra").value.trim(),
+            pecas: document.getElementById("osPecas").value.trim(),
+            pagamento: document.getElementById("osPagamento").value,
+            observacoes: document.getElementById("osObs").value.trim()
+        };
+
+        console.log("Ordem de Serviço:", ordemServico);
+
+        fecharModal();
+    });
+}
+
 /* ===============================
    NOTIFICAÇÕES - MENU SUPERIOR
 ================================ */
@@ -315,3 +374,4 @@ if(userBtn && userMenu){
         userMenu.classList.remove("active");
     });
 }
+
