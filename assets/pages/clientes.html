@@ -1,0 +1,134 @@
+<section class="clientes-page">
+
+    <!-- AÇÕES -->
+    <div class="page-actions">
+        <button class="btn-main" id="abrirModalCliente" type="button">
+            <i class="ri-user-add-line"></i>
+            Novo cliente
+        </button>
+    </div>
+
+    <!-- LISTA DE CLIENTES -->
+    <div class="glass-card">
+
+        <div class="consulta-header">
+            <div>
+                <h3>Lista de clientes</h3>
+                <p>Busque por nome, telefone ou placa.</p>
+            </div>
+
+            <div class="search-box">
+                <i class="ri-search-line"></i>
+                <input type="text" id="buscaCliente" placeholder="Buscar cliente...">
+            </div>
+        </div>
+
+        <div class="clientes-resumo">
+            <span id="totalClientes">0 clientes cadastrados</span>
+        </div>
+
+        <div id="clientesGrid" class="clientes-grid lista-clientes">
+            <p class="empty-message">Nenhum cliente cadastrado.</p>
+        </div>
+
+    </div>
+
+    <!-- MODAL CADASTRO CLIENTE -->
+    <div class="modal-overlay" id="modalCliente">
+        <div class="modal-card">
+
+            <div class="modal-header">
+                <div>
+                    <h3>Dados do Cliente</h3>
+                    <p>Preencha as informações principais do cliente e veículo.</p>
+                </div>
+
+                <button class="btn-close-modal" id="fecharModalCliente" type="button">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <form id="clienteForm" class="form-clientes modal-form">
+
+                <div class="form-2-cols">
+                    <div>
+                        <label for="cliNome">Nome do Cliente</label>
+                        <input type="text" id="cliNome" placeholder="Ex: Maria Oliveira" required>
+                    </div>
+
+                    <div>
+                        <label for="cliNascimento">Data de Nascimento</label>
+                        <input type="date" id="cliNascimento">
+                    </div>
+                </div>
+
+                <div class="form-2-cols">
+                    <div>
+                        <label for="cliMae">Nome da Mãe</label>
+                        <input type="text" id="cliMae" placeholder="Nome da mãe">
+                    </div>
+
+                    <div>
+                        <label for="cliPai">Nome do Pai</label>
+                        <input type="text" id="cliPai" placeholder="Nome do pai">
+                    </div>
+                </div>
+
+                <div class="form-2-cols">
+                    <div>
+                        <label for="cliTelefone">Telefone / WhatsApp</label>
+                        <input type="text" id="cliTelefone" placeholder="(00) 00000-0000">
+                    </div>
+
+                    <div>
+                        <label for="cliQtdVeiculos">Quantidade de veículo</label>
+                        <input type="number" id="cliQtdVeiculos" placeholder="Ex: 1" min="1">
+                    </div>
+                </div>
+
+                <div class="form-3-cols">
+                    <div>
+                        <label for="cliPlaca">Placa do veículo</label>
+                        <input type="text" id="cliPlaca" placeholder="ABC1D23">
+                    </div>
+
+                    <div>
+                        <label for="cliMarca">Marca</label>
+                        <input type="text" id="cliMarca" placeholder="Ex: Fiat">
+                    </div>
+
+                    <div>
+                        <label for="cliModelo">Modelo</label>
+                        <input type="text" id="cliModelo" placeholder="Ex: Uno">
+                    </div>
+                </div>
+
+                <div class="form-2-cols">
+                    <div>
+                        <label for="cliAno">Ano</label>
+                        <input type="number" id="cliAno" placeholder="Ex: 2015">
+                    </div>
+
+                    <div>
+                        <label for="cliObs">Observações</label>
+                        <textarea id="cliObs" rows="3" placeholder="Observações importantes"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-soft" id="cancelarModalCliente">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-main">
+                        <i class="ri-save-3-line"></i>
+                        Salvar cliente
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</section>

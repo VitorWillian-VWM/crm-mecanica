@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Precision System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="assets/img/crmLogo.ico" type="image/x-icon">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app-top">
+
+        <header class="topbar">
+            <div class="brand">
+                <h2>Precision <span>System</span></h2>
+            </div>
+
+            <div class="top-actions">
+                <button><i class="ri-notification-3-line"></i></button>
+                <button><i class="ri-settings-3-line"></i></button>
+                <button><i class="ri-user-line"></i></button>
+            </div>
+        </header>
+
+        <nav class="top-menu">
+            <button class="menu-item active" data-page="dashboard">Dashboard</button>
+            <button class="menu-item" data-page="clientes">Clientes</button>
+            <button class="menu-item" data-page="patio">Pátio / O.S</button>
+            <button class="menu-item" data-page="estoque">Estoque</button>
+            <button class="menu-item" data-page="financeiro">Financeiro</button>
+            <button class="menu-item" data-page="historico">Histórico</button>
+        </nav>
+
+        <main class="main">
+            <div class="container-main">
+
+                <header class="header">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageDescription">Visão geral da oficina</p>
+                </header>
+
+                <section id="pageContent">
+                    <div class="cards compact">
+                        <div class="card">
+                            <h4>Veículos no Pátio</h4>
+                            <h2>0</h2>
+                        </div>
+
+                        <div class="card">
+                            <h4>O.S. em Andamento</h4>
+                            <h2>0</h2>
+                        </div>
+
+                        <div class="card">
+                            <h4>Faturamento Hoje</h4>
+                            <h2>R$ 0,00</h2>
+                        </div>
+
+                        <div class="card">
+                            <h4>Clientes</h4>
+                            <h2>0</h2>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h3>Atividades recentes</h3>
+                        <p>Nenhuma movimentação registrada.</p>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="main.js"></script>
+</body>
+
+</html>
