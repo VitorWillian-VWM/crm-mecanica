@@ -246,3 +246,29 @@ if(notificationBtn && notificationMenu){
         notificationMenu.classList.remove("active");
     });
 }
+
+/* ===============================
+   CONFIGURAÇÕES - MENU SUPERIOR
+================================ */
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsMenu = document.getElementById("settingsMenu");
+
+if(settingsBtn && settingsMenu){
+    settingsBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        settingsMenu.classList.toggle("active");
+
+        if(notificationMenu){
+            notificationMenu.classList.remove("active");
+        }
+    });
+
+    settingsMenu.addEventListener("click", (event) => {
+        event.stopPropagation();
+    });
+
+    document.addEventListener("click", () => {
+        settingsMenu.classList.remove("active");
+    });
+}

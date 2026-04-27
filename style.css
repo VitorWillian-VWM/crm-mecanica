@@ -137,6 +137,82 @@ body{
 }
 
 /* ===============================
+   MENU DE CONFIGURAÇÕES
+================================ */
+.settings-wrapper{
+    position:relative;
+}
+
+.settings-menu{
+    position:absolute;
+    top:46px;
+    right:0;
+    width:260px;
+    background:#fff;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:0 18px 45px rgba(0,0,0,.18);
+    padding:10px;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-10px);
+    transition:.25s ease;
+    z-index:1000;
+}
+
+.settings-menu.active{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+
+.settings-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 8px 12px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:6px;
+}
+
+.settings-header span{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.settings-item{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:transparent;
+    color:var(--text);
+    font-weight:600;
+    cursor:pointer;
+    text-align:left;
+    transition:.2s ease;
+}
+
+.settings-item i{
+    font-size:18px;
+    color:var(--accent-dark);
+}
+
+.settings-item:hover{
+    background:#f3f4f6;
+}
+
+.settings-divider{
+    height:1px;
+    background:var(--border);
+    margin:6px 0;
+}
+
+/* ===============================
    MENU
 ================================ */
 .top-menu{
