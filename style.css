@@ -577,6 +577,49 @@ textarea{
 }
 
 /* ===============================
+   PÁGINA CLIENTES - ORGANIZAÇÃO
+================================ */
+.clientes-page{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.clientes-page .page-actions{
+    display:flex;
+    justify-content:flex-start;
+    padding-bottom:16px;
+    border-bottom:1px solid var(--border);
+    margin:0;
+}
+
+.clientes-page .glass-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+}
+
+.clientes-page .consulta-header{
+    padding-bottom:16px;
+    border-bottom:1px solid var(--border);
+}
+
+.clientes-resumo{
+    margin:14px 0;
+    padding:10px 12px;
+    background:#f9fafb;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--muted);
+    font-size:14px;
+}
+
+.lista-clientes{
+    padding-top:4px;
+}
+
+/* ===============================
    MODAL HEADER
 ================================ */
 .modal-header{
