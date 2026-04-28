@@ -1,3 +1,14 @@
+/*
+Para zerar o db.json
+{
+  "clientes": [],
+  "estoque": [],
+  "ordensServico": [],
+  "historico": [],
+  "financeiro": [],
+  "caixas": []
+}
+*/
 const API_URL = "api.php";
 
 /* ===============================
