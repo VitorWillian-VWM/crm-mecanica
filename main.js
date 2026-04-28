@@ -55,6 +55,7 @@ async function carregarBanco() {
     if (!db.ordensServico) db.ordensServico = [];
     if (!db.historico) db.historico = [];
     if (!db.financeiro) db.financeiro = [];
+    if (!db.caixas) db.caixas = [];
 }
 
 /* função para salvar os dados no banco (API) */
@@ -138,6 +139,11 @@ async function loadPage(page) {
 
     if (!selectedPage.file) {
         pageContent.innerHTML = dashboardHTML;
+
+        setTimeout(() => {
+            iniciarDashboard();
+        }, 0);
+
         return;
     }
 
@@ -149,6 +155,7 @@ async function loadPage(page) {
         }
 
         pageContent.innerHTML = await response.text();
+
 
         if (page === "clientes") {
             iniciarPaginaClientes();
@@ -178,6 +185,31 @@ async function loadPage(page) {
             </div>
         `;
     }
+}
+
+/* função para iniciar a dashboard */
+async function iniciarDashboard() {
+    await carregarBanco();
+
+    const totalClientes = (db.clientes || []).length;
+
+    const osEmAndamento = (db.ordensServico || [])
+        .filter(os => os.status !== "finalizada").length;
+
+    const veiculosPatio = (db.ordensServico || [])
+        .filter(os => os.status !== "finalizada").length;
+
+    const hoje = new Date().toISOString().slice(0, 10);
+
+    const faturamentoHoje = (db.financeiro || [])
+        .filter(mov => mov.tipo === "entrada" && mov.data === hoje)
+        .reduce((total, mov) => total + Number(mov.valor || 0), 0);
+
+    // Atualiza DOM
+    document.querySelectorAll(".card h2")[0].textContent = veiculosPatio;
+    document.querySelectorAll(".card h2")[1].textContent = osEmAndamento;
+    document.querySelectorAll(".card h2")[2].textContent = `R$ ${faturamentoHoje.toFixed(2)}`;
+    document.querySelectorAll(".card h2")[3].textContent = totalClientes;
 }
 
 /* função para iniciar a página de clientes */
@@ -359,7 +391,7 @@ async function iniciarPaginaPatio() {
             <option value="">Selecione uma peça...</option>
             ${(db.estoque || []).map(peca => `
                 <option value="${peca.id}">
-                    ${peca.nome || peca.descricao} - R$ ${Number(peca.preco || 0).toFixed(2)}
+                    ${peca.nome || peca.descricao} - R$ ${Number(peca.precoVenda || 0).toFixed(2)}
                 </option>
             `).join("")}
         `;
@@ -458,7 +490,7 @@ async function iniciarPaginaPatio() {
             pecasSelecionadas.push({
                 id: peca.id,
                 nome: peca.nome || peca.descricao,
-                preco: Number(peca.preco || 0),
+                preco: Number(peca.precoVenda || 0),
                 quantidade
             });
         }
@@ -689,17 +721,86 @@ function iniciarPaginaFinanceiro() {
     const financeiroGrid = document.getElementById("financeiroGrid");
     const totalFinanceiro = document.getElementById("totalFinanceiro");
 
-    if (!modalFinanceiro || !financeiroForm || !modalCaixa || !caixaForm) return;
+    const dinheiroBox = document.getElementById("dinheiroBox");
+    const finValorRecebido = document.getElementById("finValorRecebido");
+    const finTroco = document.getElementById("finTroco");
+    const finPagamento = document.getElementById("finPagamento");
 
-    let caixaAberto = false;
+    if (
+    !modalFinanceiro ||
+    !financeiroForm ||
+    !modalCaixa ||
+    !caixaForm ||
+    !abrirModalCaixa ||
+    !finPagamento ||
+    !dinheiroBox ||
+    !finValorRecebido ||
+    !finTroco
+) {
+    console.warn("Algum elemento do financeiro não foi encontrado no HTML.");
+    return;
+}
+
     let movimentacoes = [];
+    let caixaAberto = false;
+
+    function verificarCaixaAbertoHoje() {
+        const hoje = new Date().toISOString().slice(0, 10);
+
+        const caixaHoje = (db.caixas || []).find(caixa =>
+            caixa.status === "aberto" && caixa.data === hoje
+        );
+
+        caixaAberto = !!caixaHoje;
+
+        if (caixaAberto) {
+            abrirModalCaixa.classList.add("btn-disabled");
+            abrirModalCaixa.innerHTML = `
+                <i class="ri-lock-line"></i>
+                Caixa aberto hoje
+            `;
+        } else {
+            abrirModalCaixa.classList.remove("btn-disabled");
+            abrirModalCaixa.innerHTML = `
+                <i class="ri-cash-line"></i>
+                Abrir caixa
+            `;
+        }
+    }
+
+    function atualizarCampoDinheiro() {
+        if (finPagamento.value === "dinheiro") {
+            dinheiroBox.style.display = "grid";
+        } else {
+            dinheiroBox.style.display = "none";
+            finValorRecebido.value = "";
+            finTroco.value = "";
+        }
+    }
+
+    function calcularTroco() {
+        const total = Number(finValor.value || 0);
+        const recebido = Number(finValorRecebido.value || 0);
+        const troco = recebido - total;
+
+        finTroco.value = troco > 0 ? troco.toFixed(2) : "0.00";
+    }
 
     carregarBanco().then(() => {
+        movimentacoes = db.financeiro || [];
+
+        verificarCaixaAbertoHoje();
         preencherClientesFinanceiro();
         renderizarFinanceiro();
+        atualizarCampoDinheiro();
     });
 
     function abrirCaixa() {
+        if (caixaAberto) {
+            mostrarAlerta("Atenção", "O caixa de hoje já foi aberto.");
+            return;
+        }
+
         modalCaixa.classList.add("active");
     }
 
@@ -716,12 +817,14 @@ function iniciarPaginaFinanceiro() {
 
         modalFinanceiro.classList.add("active");
         preencherClientesFinanceiro();
+        atualizarCampoDinheiro();
     }
 
     function fecharFinanceiro() {
         modalFinanceiro.classList.remove("active");
         financeiroForm.reset();
         limparCamposOS();
+        atualizarCampoDinheiro();
     }
 
     function preencherClientesFinanceiro() {
@@ -737,7 +840,7 @@ function iniciarPaginaFinanceiro() {
 
     function preencherOSPorCliente(clienteId) {
         const ordensDoCliente = (db.ordensServico || []).filter(os =>
-            Number(os.clienteId) === Number(clienteId)
+            Number(os.clienteId) === Number(clienteId) && os.status !== "finalizada"
         );
 
         finOSSelect.innerHTML = `
@@ -755,11 +858,15 @@ function iniciarPaginaFinanceiro() {
         finMaoObra.value = "";
         finTotalPecas.value = "";
         finValor.value = "";
+        finValorRecebido.value = "";
+        finTroco.value = "";
     }
+
+    finPagamento.addEventListener("change", atualizarCampoDinheiro);
+    finValorRecebido.addEventListener("input", calcularTroco);
 
     finClienteSelect.addEventListener("change", () => {
         const clienteId = finClienteSelect.value;
-
         limparCamposOS();
 
         if (!clienteId) return;
@@ -772,15 +879,15 @@ function iniciarPaginaFinanceiro() {
         const ordemServico = (db.ordensServico || []).find(os => Number(os.id) === osId);
 
         if (!ordemServico) {
-            finMaoObra.value = "";
-            finTotalPecas.value = "";
-            finValor.value = "";
+            limparCamposOS();
             return;
         }
 
         finMaoObra.value = Number(ordemServico.maoObra || 0).toFixed(2);
         finTotalPecas.value = Number(ordemServico.totalPecas || 0).toFixed(2);
         finValor.value = Number(ordemServico.totalGeral || 0).toFixed(2);
+
+        calcularTroco();
     });
 
     abrirModalCaixa.addEventListener("click", abrirCaixa);
@@ -788,15 +895,11 @@ function iniciarPaginaFinanceiro() {
     cancelarModalCaixa.addEventListener("click", fecharCaixa);
 
     modalCaixa.addEventListener("click", (event) => {
-        if (event.target === modalCaixa) {
-            fecharCaixa();
-        }
+        if (event.target === modalCaixa) fecharCaixa();
     });
 
-    caixaForm.addEventListener("submit", (event) => {
+    caixaForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-
-        caixaAberto = true;
 
         const caixa = {
             id: Date.now(),
@@ -809,9 +912,13 @@ function iniciarPaginaFinanceiro() {
             status: "aberto"
         };
 
-        console.log("Caixa aberto:", caixa);
+        db.caixas.push(caixa);
+
+        await salvarBanco(db);
 
         fecharCaixa();
+        verificarCaixaAbertoHoje();
+
         mostrarAlerta("Sucesso", "Caixa aberto com sucesso.");
     });
 
@@ -820,12 +927,10 @@ function iniciarPaginaFinanceiro() {
     cancelarModalFinanceiro.addEventListener("click", fecharFinanceiro);
 
     modalFinanceiro.addEventListener("click", (event) => {
-        if (event.target === modalFinanceiro) {
-            fecharFinanceiro();
-        }
+        if (event.target === modalFinanceiro) fecharFinanceiro();
     });
 
-    financeiroForm.addEventListener("submit", (event) => {
+    financeiroForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const clienteSelecionado = (db.clientes || []).find(
@@ -845,28 +950,69 @@ function iniciarPaginaFinanceiro() {
             maoObra: Number(finMaoObra.value || 0),
             totalPecas: Number(finTotalPecas.value || 0),
             valor: Number(finValor.value || 0),
-            pagamento: document.getElementById("finPagamento").value,
+            pagamento: finPagamento.value,
+            valorRecebido: finPagamento.value === "dinheiro"
+                ? Number(finValorRecebido.value || 0)
+                : Number(finValor.value || 0),
+            troco: finPagamento.value === "dinheiro"
+                ? Number(finTroco.value || 0)
+                : 0,
             data: document.getElementById("finData").value,
             descricao: document.getElementById("finDescricao").value.trim(),
             criadoEm: new Date().toLocaleString("pt-BR")
         };
 
+        if (ordemSelecionada) {
+            ordemSelecionada.status = "finalizada";
+            ordemSelecionada.finalizadaEm = new Date().toLocaleString("pt-BR");
+        }
+
         movimentacoes.push(movimentacao);
+        db.financeiro = movimentacoes;
+
+        await salvarBanco(db);
 
         renderizarFinanceiro();
         fecharFinanceiro();
 
-        console.log("Movimentação financeira:", movimentacao);
+        mostrarAlerta("Sucesso", "Movimentação registrada com sucesso.");
     });
 
     function renderizarFinanceiro() {
         totalFinanceiro.textContent = `${movimentacoes.length} movimentaç${movimentacoes.length === 1 ? "ão" : "ões"}`;
+
+        const hoje = new Date().toISOString().slice(0, 10);
+        const mesAtual = new Date().toISOString().slice(0, 7);
+
+        const totalHoje = movimentacoes
+            .filter(mov => mov.tipo === "entrada" && mov.data === hoje)
+            .reduce((total, mov) => total + Number(mov.valor || 0), 0);
+
+        const totalMes = movimentacoes
+            .filter(mov => mov.tipo === "entrada" && (mov.data || "").slice(0, 7) === mesAtual)
+            .reduce((total, mov) => total + Number(mov.valor || 0), 0);
+
+        const totalAberto = movimentacoes
+            .filter(mov => mov.pagamento === "pendente")
+            .reduce((total, mov) => total + Number(mov.valor || 0), 0);
+
+        const totalRecebido = movimentacoes
+            .filter(mov => mov.tipo === "entrada" && mov.pagamento !== "pendente")
+            .reduce((total, mov) => total + Number(mov.valor || 0), 0);
+
+        document.getElementById("fatHoje").textContent = `R$ ${totalHoje.toFixed(2)}`;
+        document.getElementById("fatMes").textContent = `R$ ${totalMes.toFixed(2)}`;
+        document.getElementById("fatAberto").textContent = `R$ ${totalAberto.toFixed(2)}`;
+        document.getElementById("fatRecebido").textContent = `R$ ${totalRecebido.toFixed(2)}`;
 
         financeiroGrid.innerHTML = movimentacoes.map(mov => `
             <div class="financeiro-item entrada">
                 <div>
                     <strong>${mov.clienteNome || "Cliente não informado"}</strong>
                     <p>O.S #${mov.ordemServicoId || "-"} • ${mov.pagamento} • ${mov.data || "Sem data"}</p>
+                    ${mov.pagamento === "dinheiro" ? `
+                        <p>Recebido: R$ ${Number(mov.valorRecebido || 0).toFixed(2)} • Troco: R$ ${Number(mov.troco || 0).toFixed(2)}</p>
+                    ` : ""}
                 </div>
 
                 <h3>R$ ${Number(mov.valor || 0).toFixed(2)}</h3>
@@ -876,7 +1022,6 @@ function iniciarPaginaFinanceiro() {
         `;
     }
 }
-
 
 /* função para iniciar a página de histórico */
 function iniciarPaginaHistorico() {

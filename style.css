@@ -511,6 +511,12 @@ textarea {
     align-items: center;
     gap: 6px;
 }
+.btn-disabled{
+    background:#d1d5db !important;
+    color:#6b7280 !important;
+    cursor:not-allowed !important;
+    opacity:.75;
+}
 
 .btn-soft {
     background: #f3f4f6;
