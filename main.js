@@ -1,5 +1,43 @@
 const API_URL = "api.php";
 
+/* ===============================
+   ALERTA GLOBAL
+================================ */
+function mostrarAlerta(titulo, mensagem) {
+    const modal = document.getElementById("modalAlerta");
+    const tituloEl = document.getElementById("alertaTitulo");
+    const mensagemEl = document.getElementById("alertaMensagem");
+
+    if (!modal || !tituloEl || !mensagemEl) {
+        console.warn("Modal de alerta não encontrado no HTML.");
+        return;
+    }
+
+    tituloEl.textContent = titulo;
+    mensagemEl.textContent = mensagem;
+
+    modal.classList.add("active");
+}
+
+function fecharAlerta() {
+    const modal = document.getElementById("modalAlerta");
+
+    if (modal) {
+        modal.classList.remove("active");
+    }
+}
+
+document.addEventListener("click", (e) => {
+    if (
+        e.target.id === "fecharAlerta" ||
+        e.target.id === "okAlerta" ||
+        e.target.closest("#fecharAlerta") ||
+        e.target.closest("#okAlerta")
+    ) {
+        fecharAlerta();
+    }
+});
+
 let db = {
     clientes: [],
     estoque: [],
@@ -111,10 +149,6 @@ async function loadPage(page) {
 
         if (page === "estoque") {
             iniciarPaginaEstoque();
-        }
-
-        if (page === "financeiro") {
-            iniciarPaginaFinanceiro();
         }
 
         if (page === "financeiro") {
@@ -501,71 +535,6 @@ function iniciarPaginaEstoque() {
     });
 }
 
-/* função para iniciar a página de financeiro */
-function iniciarPaginaFinanceiro() {
-
-    const abrirModal = document.getElementById("abrirModalFinanceiro");
-    const fecharModal = document.getElementById("fecharModalFinanceiro");
-    const cancelarModal = document.getElementById("cancelarModalFinanceiro");
-    const modal = document.getElementById("modalFinanceiro");
-    const form = document.getElementById("financeiroForm");
-    const grid = document.getElementById("financeiroGrid");
-    const total = document.getElementById("totalFinanceiro");
-
-    let movimentacoes = [];
-
-    function abrir() {
-        modal.classList.add("active");
-    }
-
-    function fechar() {
-        modal.classList.remove("active");
-        form.reset();
-    }
-
-    abrirModal.addEventListener("click", abrir);
-    fecharModal.addEventListener("click", fechar);
-    cancelarModal.addEventListener("click", fechar);
-
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) fechar();
-    });
-
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const mov = {
-            id: Date.now(),
-            tipo: document.getElementById("finTipo").value,
-            valor: Number(document.getElementById("finValor").value),
-            descricao: document.getElementById("finDescricao").value,
-            pagamento: document.getElementById("finPagamento").value,
-            data: document.getElementById("finData").value
-        };
-
-        movimentacoes.push(mov);
-
-        renderizar();
-        fechar();
-    });
-
-    function renderizar() {
-        total.textContent = `${movimentacoes.length} movimentações`;
-
-        grid.innerHTML = movimentacoes.map(m => `
-            <div class="financeiro-item ${m.tipo}">
-                <div>
-                    <strong>${m.descricao}</strong>
-                    <p>${m.pagamento} • ${m.data || ""}</p>
-                </div>
-                <h3>R$ ${m.valor.toFixed(2)}</h3>
-            </div>
-        `).join("") || `<p class="empty-message">Nenhuma movimentação registrada.</p>`;
-    }
-
-    renderizar();
-}
-
 
 /* função para iniciar a página de financeiro */
 function iniciarPaginaFinanceiro() {
@@ -611,7 +580,7 @@ function iniciarPaginaFinanceiro() {
 
     function abrirFinanceiro() {
         if (!caixaAberto) {
-            alert("Abra o caixa antes de registrar uma movimentação.");
+            mostrarAlerta("Atenção", "Abra o caixa antes de registrar uma movimentação.");
             return;
         }
 
@@ -713,7 +682,7 @@ function iniciarPaginaFinanceiro() {
         console.log("Caixa aberto:", caixa);
 
         fecharCaixa();
-        alert("Caixa aberto com sucesso.");
+        mostrarAlerta("Sucesso", "Caixa aberto com sucesso.");
     });
 
     abrirModalFinanceiro.addEventListener("click", abrirFinanceiro);
