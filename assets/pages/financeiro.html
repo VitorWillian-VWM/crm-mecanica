@@ -2,6 +2,11 @@
 
     <!-- AÇÕES -->
     <div class="financeiro-actions">
+        <button class="btn-main" id="abrirModalCaixa" type="button">
+            <i class="ri-cash-line"></i>
+            Abrir caixa
+        </button>
+
         <button class="btn-main" id="abrirModalFinanceiro" type="button">
             <i class="ri-money-dollar-circle-line"></i>
             Nova movimentação
@@ -77,38 +82,57 @@
 
                 <div class="form-2-cols">
                     <div>
-                        <label>Tipo</label>
-                        <select id="finTipo">
-                            <option value="entrada">Entrada</option>
-                            <option value="saida">Saída</option>
+                        <label for="finClienteSelect">Cliente</label>
+                        <select id="finClienteSelect" required>
+                            <option value="">Selecione um cliente...</option>
                         </select>
                     </div>
 
                     <div>
-                        <label>Valor (R$)</label>
-                        <input type="number" id="finValor" step="0.01" required>
+                        <label for="finOSSelect">Ordem de Serviço</label>
+                        <select id="finOSSelect" required>
+                            <option value="">Selecione uma O.S...</option>
+                        </select>
                     </div>
                 </div>
 
-                <div>
-                    <label>Descrição</label>
-                    <input type="text" id="finDescricao" placeholder="Ex: pagamento cliente, compra de peças..." required>
+                <div class="form-3-cols">
+                    <div>
+                        <label for="finMaoObra">Mão de obra (R$)</label>
+                        <input type="number" id="finMaoObra" readonly>
+                    </div>
+
+                    <div>
+                        <label for="finTotalPecas">Total em peças (R$)</label>
+                        <input type="number" id="finTotalPecas" readonly>
+                    </div>
+
+                    <div>
+                        <label for="finValor">Total a receber (R$)</label>
+                        <input type="number" id="finValor" readonly>
+                    </div>
                 </div>
 
                 <div class="form-2-cols">
                     <div>
-                        <label>Forma de pagamento</label>
+                        <label for="finPagamento">Forma de pagamento</label>
                         <select id="finPagamento">
                             <option value="dinheiro">Dinheiro</option>
                             <option value="pix">Pix</option>
                             <option value="cartao">Cartão</option>
+                            <option value="pendente">Pendente</option>
                         </select>
                     </div>
 
                     <div>
-                        <label>Data</label>
+                        <label for="finData">Data</label>
                         <input type="date" id="finData">
                     </div>
+                </div>
+
+                <div>
+                    <label for="finDescricao">Observações do pagamento</label>
+                    <input type="text" id="finDescricao" placeholder="Ex: pagamento referente à O.S #001">
                 </div>
 
                 <div class="modal-actions">
@@ -118,7 +142,7 @@
 
                     <button type="submit" class="btn-main">
                         <i class="ri-save-3-line"></i>
-                        Salvar
+                        Registrar pagamento
                     </button>
                 </div>
 
@@ -128,3 +152,67 @@
     </div>
 
 </section>
+
+<div class="modal-overlay" id="modalCaixa">
+    <div class="modal-card">
+
+        <div class="modal-header">
+            <div>
+                <h3>Abrir caixa</h3>
+                <p>Informe os dados iniciais para começar o controle financeiro do dia.</p>
+            </div>
+
+            <button class="btn-close-modal" id="fecharModalCaixa" type="button">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+
+        <form id="caixaForm" class="modal-form">
+
+            <div class="form-2-cols">
+                <div>
+                    <label for="caixaResponsavel">Responsável</label>
+                    <input type="text" id="caixaResponsavel" placeholder="Nome do operador" required>
+                </div>
+
+                <div>
+                    <label for="caixaData">Data de abertura</label>
+                    <input type="date" id="caixaData" required>
+                </div>
+            </div>
+
+            <div class="form-2-cols">
+                <div>
+                    <label for="caixaValorInicial">Valor inicial em caixa (R$)</label>
+                    <input type="number" id="caixaValorInicial" step="0.01" placeholder="0.00" required>
+                </div>
+
+                <div>
+                    <label for="caixaTurno">Turno</label>
+                    <select id="caixaTurno">
+                        <option value="manha">Manhã</option>
+                        <option value="tarde">Tarde</option>
+                        <option value="integral">Integral</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="caixaObs">Observações</label>
+                <textarea id="caixaObs" rows="3" placeholder="Observações sobre a abertura do caixa..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-soft" id="cancelarModalCaixa">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn-main">
+                    <i class="ri-lock-unlock-line"></i>
+                    Abrir caixa
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>

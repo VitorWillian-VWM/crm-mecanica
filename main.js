@@ -117,6 +117,10 @@ async function loadPage(page) {
             iniciarPaginaFinanceiro();
         }
 
+        if (page === "financeiro") {
+            iniciarPaginaFinanceiro();
+        }
+
     } catch (error) {
         pageContent.innerHTML = `
             <div class="panel">
@@ -560,6 +564,218 @@ function iniciarPaginaFinanceiro() {
     }
 
     renderizar();
+}
+
+
+/* função para iniciar a página de financeiro */
+function iniciarPaginaFinanceiro() {
+    const abrirModalFinanceiro = document.getElementById("abrirModalFinanceiro");
+    const fecharModalFinanceiro = document.getElementById("fecharModalFinanceiro");
+    const cancelarModalFinanceiro = document.getElementById("cancelarModalFinanceiro");
+    const modalFinanceiro = document.getElementById("modalFinanceiro");
+    const financeiroForm = document.getElementById("financeiroForm");
+
+    const abrirModalCaixa = document.getElementById("abrirModalCaixa");
+    const fecharModalCaixa = document.getElementById("fecharModalCaixa");
+    const cancelarModalCaixa = document.getElementById("cancelarModalCaixa");
+    const modalCaixa = document.getElementById("modalCaixa");
+    const caixaForm = document.getElementById("caixaForm");
+
+    const finClienteSelect = document.getElementById("finClienteSelect");
+    const finOSSelect = document.getElementById("finOSSelect");
+    const finMaoObra = document.getElementById("finMaoObra");
+    const finTotalPecas = document.getElementById("finTotalPecas");
+    const finValor = document.getElementById("finValor");
+
+    const financeiroGrid = document.getElementById("financeiroGrid");
+    const totalFinanceiro = document.getElementById("totalFinanceiro");
+
+    if (!modalFinanceiro || !financeiroForm || !modalCaixa || !caixaForm) return;
+
+    let caixaAberto = false;
+    let movimentacoes = [];
+
+    carregarBanco().then(() => {
+        preencherClientesFinanceiro();
+        renderizarFinanceiro();
+    });
+
+    function abrirCaixa() {
+        modalCaixa.classList.add("active");
+    }
+
+    function fecharCaixa() {
+        modalCaixa.classList.remove("active");
+        caixaForm.reset();
+    }
+
+    function abrirFinanceiro() {
+        if (!caixaAberto) {
+            alert("Abra o caixa antes de registrar uma movimentação.");
+            return;
+        }
+
+        modalFinanceiro.classList.add("active");
+        preencherClientesFinanceiro();
+    }
+
+    function fecharFinanceiro() {
+        modalFinanceiro.classList.remove("active");
+        financeiroForm.reset();
+        limparCamposOS();
+    }
+
+    function preencherClientesFinanceiro() {
+        finClienteSelect.innerHTML = `
+            <option value="">Selecione um cliente...</option>
+            ${(db.clientes || []).map(cliente => `
+                <option value="${cliente.id}">
+                    ${cliente.nome} ${cliente.placa ? `- ${cliente.placa}` : ""}
+                </option>
+            `).join("")}
+        `;
+    }
+
+    function preencherOSPorCliente(clienteId) {
+        const ordensDoCliente = (db.ordensServico || []).filter(os =>
+            Number(os.clienteId) === Number(clienteId)
+        );
+
+        finOSSelect.innerHTML = `
+            <option value="">Selecione uma O.S...</option>
+            ${ordensDoCliente.map(os => `
+                <option value="${os.id}">
+                    O.S #${os.id} - ${os.placa || "Sem placa"} - R$ ${Number(os.totalGeral || 0).toFixed(2)}
+                </option>
+            `).join("")}
+        `;
+    }
+
+    function limparCamposOS() {
+        finOSSelect.innerHTML = `<option value="">Selecione uma O.S...</option>`;
+        finMaoObra.value = "";
+        finTotalPecas.value = "";
+        finValor.value = "";
+    }
+
+    finClienteSelect.addEventListener("change", () => {
+        const clienteId = finClienteSelect.value;
+
+        limparCamposOS();
+
+        if (!clienteId) return;
+
+        preencherOSPorCliente(clienteId);
+    });
+
+    finOSSelect.addEventListener("change", () => {
+        const osId = Number(finOSSelect.value);
+        const ordemServico = (db.ordensServico || []).find(os => Number(os.id) === osId);
+
+        if (!ordemServico) {
+            finMaoObra.value = "";
+            finTotalPecas.value = "";
+            finValor.value = "";
+            return;
+        }
+
+        finMaoObra.value = Number(ordemServico.maoObra || 0).toFixed(2);
+        finTotalPecas.value = Number(ordemServico.totalPecas || 0).toFixed(2);
+        finValor.value = Number(ordemServico.totalGeral || 0).toFixed(2);
+    });
+
+    abrirModalCaixa.addEventListener("click", abrirCaixa);
+    fecharModalCaixa.addEventListener("click", fecharCaixa);
+    cancelarModalCaixa.addEventListener("click", fecharCaixa);
+
+    modalCaixa.addEventListener("click", (event) => {
+        if (event.target === modalCaixa) {
+            fecharCaixa();
+        }
+    });
+
+    caixaForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        caixaAberto = true;
+
+        const caixa = {
+            id: Date.now(),
+            responsavel: document.getElementById("caixaResponsavel").value.trim(),
+            data: document.getElementById("caixaData").value,
+            valorInicial: Number(document.getElementById("caixaValorInicial").value || 0),
+            turno: document.getElementById("caixaTurno").value,
+            obs: document.getElementById("caixaObs").value.trim(),
+            abertoEm: new Date().toLocaleString("pt-BR"),
+            status: "aberto"
+        };
+
+        console.log("Caixa aberto:", caixa);
+
+        fecharCaixa();
+        alert("Caixa aberto com sucesso.");
+    });
+
+    abrirModalFinanceiro.addEventListener("click", abrirFinanceiro);
+    fecharModalFinanceiro.addEventListener("click", fecharFinanceiro);
+    cancelarModalFinanceiro.addEventListener("click", fecharFinanceiro);
+
+    modalFinanceiro.addEventListener("click", (event) => {
+        if (event.target === modalFinanceiro) {
+            fecharFinanceiro();
+        }
+    });
+
+    financeiroForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const clienteSelecionado = (db.clientes || []).find(
+            cliente => Number(cliente.id) === Number(finClienteSelect.value)
+        );
+
+        const ordemSelecionada = (db.ordensServico || []).find(
+            os => Number(os.id) === Number(finOSSelect.value)
+        );
+
+        const movimentacao = {
+            id: Date.now(),
+            tipo: "entrada",
+            clienteId: clienteSelecionado?.id || null,
+            clienteNome: clienteSelecionado?.nome || "",
+            ordemServicoId: ordemSelecionada?.id || null,
+            maoObra: Number(finMaoObra.value || 0),
+            totalPecas: Number(finTotalPecas.value || 0),
+            valor: Number(finValor.value || 0),
+            pagamento: document.getElementById("finPagamento").value,
+            data: document.getElementById("finData").value,
+            descricao: document.getElementById("finDescricao").value.trim(),
+            criadoEm: new Date().toLocaleString("pt-BR")
+        };
+
+        movimentacoes.push(movimentacao);
+
+        renderizarFinanceiro();
+        fecharFinanceiro();
+
+        console.log("Movimentação financeira:", movimentacao);
+    });
+
+    function renderizarFinanceiro() {
+        totalFinanceiro.textContent = `${movimentacoes.length} movimentaç${movimentacoes.length === 1 ? "ão" : "ões"}`;
+
+        financeiroGrid.innerHTML = movimentacoes.map(mov => `
+            <div class="financeiro-item entrada">
+                <div>
+                    <strong>${mov.clienteNome || "Cliente não informado"}</strong>
+                    <p>O.S #${mov.ordemServicoId || "-"} • ${mov.pagamento} • ${mov.data || "Sem data"}</p>
+                </div>
+
+                <h3>R$ ${Number(mov.valor || 0).toFixed(2)}</h3>
+            </div>
+        `).join("") || `
+            <p class="empty-message">Nenhuma movimentação registrada.</p>
+        `;
+    }
 }
 
 /* ===============================

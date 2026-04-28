@@ -903,39 +903,50 @@ textarea {
 }
 
 /* ===============================
-   FINANCEIRO
+   FINANCEIRO - PADRÃO VISUAL
 ================================ */
+
 .financeiro-page{
     display:flex;
     flex-direction:column;
     gap:18px;
 }
 
-.financeiro-actions{
+.financeiro-page .financeiro-actions{
     display:flex;
     justify-content:flex-start;
+    gap:12px;
+    padding-bottom:16px;
+    border-bottom:1px solid var(--border);
+    margin:0;
+}
+
+.financeiro-page .glass-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+}
+
+.financeiro-page .consulta-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
     padding-bottom:16px;
     border-bottom:1px solid var(--border);
 }
 
-.lista-financeiro{
-    padding-top:6px;
-}
-
-.financeiro-item{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px;
+.financeiro-page .clientes-resumo{
+    margin:14px 0;
+    padding:10px 12px;
+    background:#f9fafb;
     border:1px solid var(--border);
     border-radius:8px;
-    background:#fff;
+    color:var(--muted);
+    font-size:14px;
 }
 
-.financeiro-item.entrada{
-    border-left:4px solid #22c55e;
-}
-
-.financeiro-item.saida{
-    border-left:4px solid #ef4444;
+.lista-financeiro{
+    padding-top:6px;
 }
