@@ -327,10 +327,12 @@ async function iniciarPaginaPatio() {
     preencherClientesSelect();
     preencherPecasSelect();
 
+    /* console.log("Função abrirModal chamada"); */
     function abrirModal() {
         modalOS.classList.add("active");
     }
 
+    /* console.log("Função fecharModal chamada"); */
     function fecharModal() {
         modalOS.classList.remove("active");
         osForm.reset();
@@ -339,6 +341,7 @@ async function iniciarPaginaPatio() {
         calcularTotais();
     }
 
+    /* console.log("Banco de dados carregado:", db);*/
     function preencherClientesSelect() {
         osClienteSelect.innerHTML = `
             <option value="">Selecione um cliente...</option>
@@ -350,6 +353,7 @@ async function iniciarPaginaPatio() {
         `;
     }
 
+    /*console.log("Clientes carregados:", db.clientes);*/
     function preencherPecasSelect() {
         osPecaSelect.innerHTML = `
             <option value="">Selecione uma peça...</option>
@@ -359,6 +363,55 @@ async function iniciarPaginaPatio() {
                 </option>
             `).join("")}
         `;
+    }
+
+    /*console.log("Banco de dados carregado:", db);*/
+    function renderizarOrdensServico() {
+        const osGrid = document.getElementById("osGrid");
+        const totalOS = document.getElementById("totalOS");
+        const buscaOS = document.getElementById("buscaOS");
+
+        if (!osGrid || !totalOS) return;
+
+        const busca = buscaOS ? buscaOS.value.toLowerCase() : "";
+
+        const ordensFiltradas = (db.ordensServico || []).filter(os =>
+            (os.clienteNome || "").toLowerCase().includes(busca) ||
+            (os.placa || "").toLowerCase().includes(busca)
+        );
+
+        totalOS.textContent = `${db.ordensServico.length} ordem${db.ordensServico.length !== 1 ? "s" : ""} de serviço aberta${db.ordensServico.length !== 1 ? "s" : ""}`;
+
+        osGrid.innerHTML = ordensFiltradas.map(os => `
+        <article class="client-card">
+            <div class="client-info">
+                <h3>${os.clienteNome || "Cliente não informado"}</h3>
+
+                <p>
+                    <i class="ri-car-line"></i>
+                    ${os.placa || "Sem placa"} - ${os.marca || ""} ${os.modelo || ""}
+                </p>
+
+                <p>
+                    <i class="ri-tools-line"></i>
+                    Status: ${os.status || "aberta"}
+                </p>
+
+                <p>
+                    <i class="ri-money-dollar-circle-line"></i>
+                    Total: R$ ${Number(os.totalGeral || 0).toFixed(2)}
+                </p>
+            </div>
+
+            <div class="client-actions">
+                <button class="btn-soft" type="button">
+                    Ver detalhes
+                </button>
+            </div>
+        </article>
+    `).join("") || `
+        <p class="empty-message">Nenhuma ordem de serviço cadastrada.</p>
+    `;
     }
 
     osClienteSelect.addEventListener("change", () => {
@@ -464,7 +517,7 @@ async function iniciarPaginaPatio() {
         }
     });
 
-    osForm.addEventListener("submit", (event) => {
+    osForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const clienteSelecionado = db.clientes.find(
@@ -493,24 +546,46 @@ async function iniciarPaginaPatio() {
             criadoEm: new Date().toLocaleString("pt-BR")
         };
 
-        console.log("Ordem de Serviço:", ordemServico);
+        /*console.log("Ordem de serviço recebida:", ordemServico);*/
+        db.ordensServico.push(ordemServico);
+
+        await salvarBanco(db);
+
+        renderizarOrdensServico();
 
         fecharModal();
+        mostrarAlerta("Sucesso", "Ordem de serviço cadastrada com sucesso.");
+
+
     });
 
     renderizarPecasOS();
     calcularTotais();
+
+    renderizarOrdensServico();
+
+    const buscaOS = document.getElementById("buscaOS");
+    if (buscaOS) {
+        buscaOS.addEventListener("input", renderizarOrdensServico);
+    }
 }
 
 /* função para iniciar a página de estoque */
-function iniciarPaginaEstoque() {
+async function iniciarPaginaEstoque() {
     const abrirModalEstoque = document.getElementById("abrirModalEstoque");
     const fecharModalEstoque = document.getElementById("fecharModalEstoque");
     const cancelarModalEstoque = document.getElementById("cancelarModalEstoque");
     const modalEstoque = document.getElementById("modalEstoque");
     const estoqueForm = document.getElementById("estoqueForm");
 
+    const buscaEstoque = document.getElementById("buscaEstoque");
+    const estoqueGrid = document.getElementById("estoqueGrid");
+    const totalEstoque = document.getElementById("totalEstoque");
+
     if (!abrirModalEstoque || !modalEstoque || !estoqueForm) return;
+
+    await carregarBanco();
+    renderizarEstoque();
 
     function abrirModal() {
         modalEstoque.classList.add("active");
@@ -519,6 +594,34 @@ function iniciarPaginaEstoque() {
     function fecharModal() {
         modalEstoque.classList.remove("active");
         estoqueForm.reset();
+    }
+
+    function renderizarEstoque() {
+        if (!estoqueGrid || !totalEstoque) return;
+
+        const busca = buscaEstoque ? buscaEstoque.value.toLowerCase() : "";
+
+        const itensFiltrados = (db.estoque || []).filter(item =>
+            (item.descricao || "").toLowerCase().includes(busca) ||
+            (item.codigo || "").toLowerCase().includes(busca) ||
+            (item.fornecedor || "").toLowerCase().includes(busca)
+        );
+
+        totalEstoque.textContent = `${db.estoque.length} item${db.estoque.length !== 1 ? "s" : ""} no estoque`;
+
+        estoqueGrid.innerHTML = itensFiltrados.map(item => `
+            <article class="estoque-card">
+                <div class="estoque-info">
+                    <h3>${item.descricao || "Item sem descrição"}</h3>
+                    <p>Código: ${item.codigo || "Sem código"}</p>
+                    <p>Quantidade: ${item.quantidade || 0}</p>
+                    <p>Venda: R$ ${Number(item.precoVenda || 0).toFixed(2)}</p>
+                    <p>Fornecedor: ${item.fornecedor || "Não informado"}</p>
+                </div>
+            </article>
+        `).join("") || `
+            <p class="empty-message">Nenhum item cadastrado no estoque.</p>
+        `;
     }
 
     abrirModalEstoque.addEventListener("click", abrirModal);
@@ -531,7 +634,11 @@ function iniciarPaginaEstoque() {
         }
     });
 
-    estoqueForm.addEventListener("submit", (event) => {
+    if (buscaEstoque) {
+        buscaEstoque.addEventListener("input", renderizarEstoque);
+    }
+
+    estoqueForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const itemEstoque = {
@@ -543,12 +650,18 @@ function iniciarPaginaEstoque() {
             precoVenda: Number(document.getElementById("estPrecoVenda").value || 0),
             fornecedor: document.getElementById("estFornecedor").value.trim(),
             dataEntrada: document.getElementById("estDataEntrada").value,
-            obs: document.getElementById("estObs").value.trim()
+            obs: document.getElementById("estObs").value.trim(),
+            criadoEm: new Date().toLocaleString("pt-BR")
         };
 
-        console.log("Item recebido no estoque:", itemEstoque);
+        db.estoque.push(itemEstoque);
 
+        await salvarBanco(db);
+
+        renderizarEstoque();
         fecharModal();
+
+        mostrarAlerta("Sucesso", "Mercadoria cadastrada no estoque com sucesso.");
     });
 }
 
