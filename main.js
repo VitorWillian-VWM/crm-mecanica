@@ -170,7 +170,7 @@ async function loadPage(page) {
 }
 
 /* função para iniciar a página de clientes */
-function iniciarPaginaClientes() {
+async function iniciarPaginaClientes() {
     const clienteForm = document.getElementById("clienteForm");
     const clientesGrid = document.getElementById("clientesGrid");
     const buscaCliente = document.getElementById("buscaCliente");
@@ -181,7 +181,8 @@ function iniciarPaginaClientes() {
     const fecharModalCliente = document.getElementById("fecharModalCliente");
     const cancelarModalCliente = document.getElementById("cancelarModalCliente");
 
-    let clientes = [];
+    await carregarBanco();
+    let clientes = db.clientes || [];
 
     function abrirModal() {
         modalCliente.classList.add("active");
@@ -202,7 +203,7 @@ function iniciarPaginaClientes() {
         }
     });
 
-    clienteForm.addEventListener("submit", (event) => {
+    clienteForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const cliente = {
@@ -220,10 +221,17 @@ function iniciarPaginaClientes() {
             obs: document.getElementById("cliObs").value.trim()
         };
 
+        cliente.criadoEm = new Date().toLocaleString("pt-BR");
+
         clientes.push(cliente);
+        db.clientes = clientes;
+
+        await salvarBanco(db);
 
         fecharModal();
         renderizarClientes();
+
+        mostrarAlerta("Sucesso", "Cliente cadastrado com sucesso.");
     });
 
     buscaCliente.addEventListener("input", renderizarClientes);
