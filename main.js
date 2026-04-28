@@ -155,6 +155,10 @@ async function loadPage(page) {
             iniciarPaginaFinanceiro();
         }
 
+        if (page === "historico") {
+            iniciarPaginaHistorico();
+        }
+
     } catch (error) {
         pageContent.innerHTML = `
             <div class="panel">
@@ -197,12 +201,6 @@ function iniciarPaginaClientes() {
             fecharModal();
         }
     });
-
-    setInterval(async () => {
-        await carregarBanco();
-        clientes = db.clientes || [];
-        renderizarClientes();
-    }, 3000);
 
     clienteForm.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -745,6 +743,148 @@ function iniciarPaginaFinanceiro() {
             <p class="empty-message">Nenhuma movimentação registrada.</p>
         `;
     }
+}
+
+
+/* função para iniciar a página de histórico */
+function iniciarPaginaHistorico() {
+    const modalHistorico = document.getElementById("modalHistorico");
+    const fecharModalHistorico = document.getElementById("fecharModalHistorico");
+    const botoesHistorico = document.querySelectorAll(".btnHistorico");
+
+    const tituloHistorico = document.getElementById("tituloHistorico");
+    const descricaoHistorico = document.getElementById("descricaoHistorico");
+    const listaHistorico = document.getElementById("listaHistorico");
+
+    const historicoAnterior = document.getElementById("historicoAnterior");
+    const historicoProximo = document.getElementById("historicoProximo");
+    const historicoPagina = document.getElementById("historicoPagina");
+
+    let paginaAtual = 1;
+    const itensPorPagina = 5;
+    let historicoAtual = [];
+
+    function montarHistoricosDoBanco() {
+        return {
+            servicos: {
+                titulo: "Histórico de serviços",
+                descricao: "Registros de ordens de serviço e manutenções.",
+                dados: (db.ordensServico || []).map(os => ({
+                    titulo: `O.S #${os.id}`,
+                    descricao: `${os.clienteNome || "Cliente não informado"} - ${os.placa || "Sem placa"} - Status: ${os.status || "Sem status"}`,
+                    data: os.criadoEm || os.dataEntrada || "Sem data",
+                    hora: ""
+                }))
+            },
+
+            financeiro: {
+                titulo: "Histórico financeiro",
+                descricao: "Registros de caixa, pagamentos e movimentações.",
+                dados: (db.financeiro || []).map(fin => ({
+                    titulo: fin.tipo === "saida" ? "Saída financeira" : "Entrada financeira",
+                    descricao: `${fin.descricao || "Movimentação"} - R$ ${Number(fin.valor || 0).toFixed(2)}`,
+                    data: fin.criadoEm || fin.data || "Sem data",
+                    hora: ""
+                }))
+            },
+
+            clientes: {
+                titulo: "Histórico de clientes",
+                descricao: "Registros de cadastros e alterações de clientes.",
+                dados: (db.clientes || []).map(cliente => ({
+                    titulo: "Cliente cadastrado",
+                    descricao: `${cliente.nome || "Sem nome"} - ${cliente.telefone || "Sem telefone"} - ${cliente.placa || "Sem placa"}`,
+                    data: cliente.criadoEm || "Sem data registrada",
+                    hora: ""
+                }))
+            },
+
+            estoque: {
+                titulo: "Histórico de estoque",
+                descricao: "Registros de entrada e controle de peças.",
+                dados: (db.estoque || []).map(item => ({
+                    titulo: "Mercadoria recebida",
+                    descricao: `${item.descricao || item.nome || "Item sem descrição"} - Qtd: ${item.quantidade || 0}`,
+                    data: item.criadoEm || item.dataEntrada || "Sem data",
+                    hora: ""
+                }))
+            }
+        };
+    }
+
+    async function abrirHistorico(tipo) {
+        await carregarBanco();
+
+        const historicos = montarHistoricosDoBanco();
+        const historico = historicos[tipo];
+
+        paginaAtual = 1;
+        historicoAtual = historico.dados;
+
+        tituloHistorico.textContent = historico.titulo;
+        descricaoHistorico.textContent = historico.descricao;
+
+        renderizarHistorico();
+        modalHistorico.classList.add("active");
+    }
+
+    function fecharHistorico() {
+        modalHistorico.classList.remove("active");
+    }
+
+    function renderizarHistorico() {
+        const inicio = (paginaAtual - 1) * itensPorPagina;
+        const fim = inicio + itensPorPagina;
+        const itensPagina = historicoAtual.slice(inicio, fim);
+
+        listaHistorico.innerHTML = itensPagina.map(item => `
+            <div class="historico-item">
+                <strong>${item.titulo}</strong>
+                <span>${item.descricao}</span>
+                <span><i class="ri-calendar-line"></i> ${item.data} às ${item.hora}</span>
+            </div>
+        `).join("") || `<p class="empty-message">Nenhum histórico encontrado.</p>`;
+
+        const totalPaginas = Math.max(1, Math.ceil(historicoAtual.length / itensPorPagina));
+
+        historicoPagina.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+
+        historicoAnterior.disabled = paginaAtual === 1;
+        historicoProximo.disabled = paginaAtual === totalPaginas;
+
+        document.querySelector(".historico-paginacao").style.display =
+            historicoAtual.length > itensPorPagina ? "flex" : "none";
+    }
+
+    botoesHistorico.forEach(botao => {
+        botao.addEventListener("click", () => {
+            abrirHistorico(botao.dataset.tipo);
+        });
+    });
+
+    fecharModalHistorico.addEventListener("click", fecharHistorico);
+
+    modalHistorico.addEventListener("click", (event) => {
+        if (event.target === modalHistorico) {
+            fecharHistorico();
+        }
+    });
+
+    historicoAnterior.addEventListener("click", () => {
+        if (paginaAtual > 1) {
+            paginaAtual--;
+            renderizarHistorico();
+        }
+    });
+
+    historicoProximo.addEventListener("click", () => {
+        const totalPaginas = Math.ceil(historicoAtual.length / itensPorPagina);
+
+        if (paginaAtual < totalPaginas) {
+            paginaAtual++;
+            renderizarHistorico();
+        }
+    });
 }
 
 /* ===============================

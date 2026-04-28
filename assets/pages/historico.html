@@ -1,0 +1,90 @@
+<section class="historico-page">
+
+    <div class="historico-grid">
+
+        <div class="historico-card">
+            <div>
+                <h3>Histórico de serviços</h3>
+                <p>Registros de O.S, manutenções e finalizações.</p>
+            </div>
+
+            <button class="btn-main btnHistorico" data-tipo="servicos" type="button">
+                <i class="ri-history-line"></i>
+                Histórico
+            </button>
+        </div>
+
+        <div class="historico-card">
+            <div>
+                <h3>Histórico financeiro</h3>
+                <p>Entradas, pagamentos, caixa e movimentações.</p>
+            </div>
+
+            <button class="btn-main btnHistorico" data-tipo="financeiro" type="button">
+                <i class="ri-money-dollar-circle-line"></i>
+                Histórico
+            </button>
+        </div>
+
+        <div class="historico-card">
+            <div>
+                <h3>Histórico de clientes</h3>
+                <p>Cadastros, atualizações e vínculos com veículos.</p>
+            </div>
+
+            <button class="btn-main btnHistorico" data-tipo="clientes" type="button">
+                <i class="ri-user-line"></i>
+                Histórico
+            </button>
+        </div>
+
+        <div class="historico-card">
+            <div>
+                <h3>Histórico de estoque</h3>
+                <p>Entrada de mercadorias, peças e alterações de saldo.</p>
+            </div>
+
+            <button class="btn-main btnHistorico" data-tipo="estoque" type="button">
+                <i class="ri-archive-line"></i>
+                Histórico
+            </button>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="modalHistorico">
+        <div class="modal-card">
+
+            <div class="modal-header">
+                <div>
+                    <h3 id="tituloHistorico">Histórico</h3>
+                    <p id="descricaoHistorico">Registros encontrados no sistema.</p>
+                </div>
+
+                <button class="btn-close-modal" id="fecharModalHistorico" type="button">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <div class="modal-form">
+                <div id="listaHistorico" class="lista-historico">
+                    <p class="empty-message">Nenhum histórico encontrado.</p>
+                </div>
+
+                <div class="historico-paginacao">
+                    <button class="btn-soft" id="historicoAnterior" type="button">
+                        Anterior
+                    </button>
+
+                    <span id="historicoPagina">Página 1</span>
+
+                    <button class="btn-soft" id="historicoProximo" type="button">
+                        Próxima
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
