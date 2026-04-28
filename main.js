@@ -57,6 +57,17 @@ async function carregarBanco() {
     if (!db.financeiro) db.financeiro = [];
 }
 
+/* função para salvar os dados no banco (API) */
+async function salvarBanco(dados) {
+    await fetch(API_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dados)
+    });
+}
+
 const pageContent = document.getElementById("pageContent");
 const pageTitle = document.getElementById("pageTitle");
 const pageDescription = document.getElementById("pageDescription");

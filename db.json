@@ -1,7 +1,1 @@
-{
-  "clientes": [],
-  "estoque": [],
-  "ordensServico": [],
-  "historico": [],
-  "financeiro": []
-}
+{"clientes":[{"id":1777401933183,"nome":"Sônia Raimunda Giovanna dos Santos","mae":"Débora Aparecida Giovana","pai":"Leonardo Kauê Lucas dos Santos","nascimento":"1991-01-01","telefone":"(18) 98681-5556","qtdVeiculos":"1","placa":"DVT-1284","marca":"Acura","modelo":"Integra GS 1.8","ano":"1991","obs":"O carro está com problemas com o motor","criadoEm":"28/04/2026, 14:45:33"}],"estoque":[],"ordensServico":[],"historico":[],"financeiro":[]}
